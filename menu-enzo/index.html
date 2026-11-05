@@ -1,0 +1,285 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.4 system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>Menú MobileStore</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@600;700&family=Figtree:wght@400;500;600;700&display=swap">
+<style id="appcss">
+/* Layout: app de una pantalla por reel (Enzo) + modo armado para el dueño con banco de ideas */
+:root{
+  --bg:#f4f4f2; --card:#ffffff; --ink:#17181a; --muted:#6a6d72; --line:#e2e2de;
+  --disc:#2f6fe0; --disc-soft:#e6eefc; --sell:#d9622b; --sell-soft:#fbeadf; --ok:#23905a; --ok-soft:#e1f3e9;
+  --mark:#fff1b8; --mark-ink:#6b4e00; --on:#ffffff; --own:#5b3fd1; --own-soft:#ece7fd;
+  --f-d:"Familjen Grotesk","Segoe UI",system-ui,sans-serif; --f-b:"Figtree","Segoe UI",system-ui,sans-serif;
+  color-scheme:light}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111214; --card:#1a1b1e; --ink:#ececea; --muted:#9a9da3; --line:#2c2e33;
+  --disc:#6f9cf0; --disc-soft:#1b2a45; --sell:#ee8a5c; --sell-soft:#3a2317; --ok:#4cc184; --ok-soft:#163626;
+  --mark:#4a3b0c; --mark-ink:#ffe08a; --on:#0d0e10; --own:#a995ff; --own-soft:#2a2346; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111214; --card:#1a1b1e; --ink:#ececea; --muted:#9a9da3; --line:#2c2e33;
+  --disc:#6f9cf0; --disc-soft:#1b2a45; --sell:#ee8a5c; --sell-soft:#3a2317; --ok:#4cc184; --ok-soft:#163626;
+  --mark:#4a3b0c; --mark-ink:#ffe08a; --on:#0d0e10; --own:#a995ff; --own-soft:#2a2346; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font:17px/1.5 var(--f-b)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 40px}
+.head{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.brand{font:700 15px var(--f-d);letter-spacing:.02em}
+.week{font-size:14px;color:var(--muted)}
+.days{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:grid;grid-template-columns:repeat(6,1fr);gap:6px;padding-block:12px}
+.days button{font:700 15px var(--f-d);border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 0 8px;cursor:pointer;display:grid;gap:2px;justify-items:center;min-width:0}
+.days button small{font:600 11px var(--f-b);color:var(--muted)}
+.days button.cur{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.days button.cur small{color:var(--bg);opacity:.8}
+.days button.done:not(.cur){border-color:var(--ok);background:var(--ok-soft)}
+.days button.done small{color:var(--ok)}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--disc);outline-offset:2px}
+.count{font-size:14px;color:var(--muted);text-align:center;margin:-2px 0 8px}
+.screen{display:grid;gap:14px}
+.type{justify-self:start;font:700 14px var(--f-b);padding:6px 12px;border-radius:99px}
+.type.d{background:var(--disc-soft);color:var(--disc)} .type.s{background:var(--sell-soft);color:var(--sell)}
+h1{font:700 clamp(26px,7vw,34px)/1.12 var(--f-d);margin:0;letter-spacing:-.015em;text-wrap:balance}
+.step{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;gap:12px}
+.sn{display:flex;align-items:center;gap:10px;font:700 17px var(--f-d)}
+.sn i{font-style:normal;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--bg);font-size:15px;flex:none}
+.big{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:58px;border:0;border-radius:14px;font:700 18px var(--f-b);cursor:pointer;text-decoration:none;text-align:center;padding:12px 16px}
+.big.watch{background:var(--disc);color:var(--on)}
+.big.rec{background:var(--ink);color:var(--bg)}
+.big.up{background:var(--card);color:var(--ok);border:2px solid var(--ok)}
+.big.up.yes{background:var(--ok);color:var(--on)}
+.proof{margin:0;font-size:15px;color:var(--muted);text-align:center}
+.proof b{color:var(--ink)}
+.lines{display:grid;gap:10px;margin:0}
+.lines p{margin:0;font-size:18px;line-height:1.45}
+.lines .k{display:block;font:700 12px var(--f-b);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+mark{background:var(--mark);color:var(--mark-ink);border-radius:4px;padding:0 3px;font-weight:600}
+.word{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:16px}
+.word b{font:700 18px var(--f-d);background:var(--ink);color:var(--bg);padding:3px 10px;border-radius:8px;letter-spacing:.04em}
+.tip{margin:0;font-size:15px;color:var(--muted)}
+.warn{font-size:14px;color:var(--mark-ink);background:var(--mark);padding:8px 12px;border-radius:10px;margin:0}
+.nav{display:flex;justify-content:space-between;gap:10px}
+.nav button{flex:1;font:600 16px var(--f-b);border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:13px;cursor:pointer}
+.nav button:disabled{opacity:.35;cursor:default}
+.end{text-align:center;font-size:15px;color:var(--muted);margin:6px 0 0}
+.tele{position:fixed;inset:0;z-index:20;background:#000;color:#fff;display:flex;flex-direction:column;
+  padding:calc(env(safe-area-inset-top,0px) + 16px) max(20px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 16px) max(20px,env(safe-area-inset-left,0px))}
+.tele .tb{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.tele .tb button{font:700 16px var(--f-b);background:#fff;color:#000;border:0;border-radius:10px;padding:10px 16px;cursor:pointer}
+.tele .tb span{font-size:14px;opacity:.7}
+.tele .txt{flex:1;overflow-y:auto;margin-top:16px;font:600 36px/1.3 var(--f-b);display:grid;gap:28px;align-content:start;padding-bottom:40vh}
+.tele .txt p{margin:0}
+.tele mark{background:#ffe066;color:#000}
+.tele .sz{display:flex;gap:8px}
+/* Modo dueño */
+.ownbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--own-soft);border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:14px}
+.ownbar span{flex:1;min-width:140px;color:var(--own);font-weight:600}
+.ownbar button,.btn{font:600 15px var(--f-b);border:1px solid var(--own);background:var(--card);color:var(--own);border-radius:10px;padding:9px 14px;cursor:pointer}
+.btn.solid{background:var(--own);color:var(--on);border-color:var(--own)}
+.btn.ghost{border-color:var(--line);color:var(--ink)}
+.edit{display:grid;gap:12px}
+.edit h2{font:700 24px/1.15 var(--f-d);margin:4px 0 0}
+.edit .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.edit label{font-size:14px;color:var(--muted);display:grid;gap:4px}
+.edit input,.edit textarea{font:16px/1.4 var(--f-b);color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;width:100%;box-sizing:border-box}
+.edit textarea{min-height:150px;resize:vertical}
+.slot{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:8px}
+.slot .top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.slot .d{font:700 15px var(--f-d);min-width:34px}
+.slot h3{font:700 18px/1.25 var(--f-d);margin:0}
+.slot .meta{font-size:14px;color:var(--muted);margin:0}
+.slot .meta a{color:inherit}
+.pill{font:700 12px var(--f-b);padding:3px 9px;border-radius:99px}
+.pill.d{background:var(--disc-soft);color:var(--disc)} .pill.s{background:var(--sell-soft);color:var(--sell)}
+.status{font-size:14px;color:var(--muted);margin:0;min-height:1.4em}
+.sheet{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
+.sheet .in{background:var(--bg);width:100%;max-width:600px;max-height:85vh;overflow-y:auto;border-radius:18px 18px 0 0;
+  padding:16px max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 20px) max(16px,env(safe-area-inset-left,0px));display:grid;gap:10px;box-sizing:border-box}
+.sheet .hd{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sheet .hd b{font:700 19px var(--f-d)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips button{font:600 14px var(--f-b);border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:7px 12px;cursor:pointer}
+.chips button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.opt{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:6px}
+.opt .r{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.opt h4{font:700 16px/1.3 var(--f-d);margin:0}
+.opt p{margin:0;font-size:14px;color:var(--muted)}
+.opt .used{font-size:12px;color:var(--muted)}
+.empty{font-size:15px;color:var(--muted);text-align:center;padding:20px 0}
+.swap{display:flex;gap:8px;flex-wrap:wrap}
+.swap button{font:600 15px var(--f-b);border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:10px 14px;cursor:pointer}
+.pill.t{background:var(--mark);color:var(--mark-ink)}
+</style>
+<script type="application/json" id="weekdata">{"label": "9 al 14 nov", "key": "ms-2026-11-09", "items": [{"id": "b01", "t": "d", "title": "¿Cuánto tarda Messi en comprarse un iPhone 18 Pro Max?", "url": "https://www.instagram.com/reel/DeNOLNdh7Os/", "views": "655 mil vistas", "who": "un local de iPhone de Uruguay (lo hizo con Luis Suárez)", "word": "MESSI", "s": [["Arrancá", "¿Cuánto tiempo le llevaría a Messi comprarse este iPhone 18 Pro Max?"], ["Después", "Según [fuente], Messi en el Inter Miami cobra unos [X] dólares por semana. Básicamente, un sueldo promedio acá en Argentina."], ["Después", "Dividiendo por los 7 días de la semana, si a la calculadora no se le acabaron las pilas, nos da unos [X] dólares por día. Y si lo dividimos por las 24 horas, unos [X] dólares por hora."], ["Después", "Antes de decirte cuánto tardaría Leo, si sos de los que les encanta el mundo iPhone, no te olvides de seguirnos."], ["Después", "Messi tardaría nada más ni nada menos que [X horas] en comprarse el 18 Pro Max, que acá en MobileStore está [precio]."], ["Cerrá", "Pero si no sos Messi y lo querés igual, te tomamos tu iPhone como parte de pago y tenés cuotas. Comentá MESSI y te digo cuál te conviene a vos."]], "tip": "Mismo orden que el original: pregunta, sueldo, cuenta con la calculadora, pedido de seguir a la mitad, resultado, cierre. Calculadora en pantalla."}, {"id": "b02", "t": "s", "title": "3 cosas antes de pasarte de Android a iPhone", "url": "https://www.instagram.com/p/DRfi688jqet/", "views": "134 mil vistas", "who": "el mismo local de Uruguay", "word": "LISTA", "s": [["Arrancá", "Nunca saltes de Android a iPhone sin antes conocer estas cuatro cosas. Si no sabés la última, estás en el horno."], ["Uno", "A mayor tamaño, mejor batería. Los Plus y los Pro Max son los más grandes, sea la generación que sea, y siempre tienen mejor batería que el resto."], ["Dos", "Evitá los Mini. El 12 y el 13 Mini casi no cambian de precio con la versión normal y no valen la pena: batería chica que no dura nada."], ["Tres", "Muchos modelos ya no se fabrican. Cuando Apple saca uno nuevo, deja de hacer el Pro y el Pro Max anterior. Si te venden un [modelo] Pro en caja sellada, tené cuidado."], ["Cuatro", "Comprá equipos liberados. Si no es libre, el dueño anterior puede no haber terminado de pagarlo y la compañía te lo bloquea."], ["Cerrá", "En MobileStore vendemos equipos libres con garantía y podés venir a verlos al local en [dirección]. Comentá LISTA y te digo cuál te conviene."]], "tip": "Igual que el original: 4 puntos numerados en pantalla, uno por toma. Dura cerca de un minuto como el original."}, {"id": "b03", "t": "d", "title": "Le ofrecí plata a un desconocido para que me haga la publicidad", "url": "https://www.instagram.com/p/DehywFFvQIq/", "views": "480 mil vistas y 901 comentarios", "who": "un local de iPhone de San Luis", "word": "CONTRATADO", "s": [["Arrancá (en la vereda)", "Hermano, ¿cómo andamos? ¿Te querés ganar [monto] pesos?"], ["Después", "Yo soy del local de acá al lado. Necesito que me ayudes a hacer un video publicitario. ¿Te animás? Vení, acompañame."], ["Después (adentro, él improvisa)", "Le das el pie para que diga: si estás buscando un iPhone, tenés que venir a MobileStore. Todos los equipos con garantía y revisados, originales."], ["Cerrá", "Que él cierre con la dirección: vení a [dirección], Floresta. Vos agregás: ¿lo contratamos para el próximo? Comentá CONTRATADO."]], "tip": "Como el original: arranca en la calle con la propuesta de plata y termina con el desconocido haciendo la publicidad. Lo gracioso lo pone él. Pedile permiso para subirlo."}, {"id": "b04", "t": "s", "title": "Canje antes de Black Friday", "url": "https://www.instagram.com/p/DeQJtuKMqEx/", "views": "te piden el modelo en comentarios", "who": "el local de San Luis", "word": "MODELO + %", "s": [["Arrancá", "Si tenés el iPhone 11, 12 o 13, ya es momento de que pegues el salto, sí o sí."], ["Después", "Tenemos stock, como ven acá (mostrás la vitrina), desde el [modelo] hasta el [modelo], para llevártelo en el momento."], ["Cerrá", "Si te interesa cambiar tu iPhone, dejame en los comentarios qué iPhone tenés y cuánto tiene de condición de batería, y te digo por cuál lo podés cambiar."]], "tip": "Corto como el original (unos 25 segundos): hablando a cámara con la vitrina atrás."}, {"id": "b05", "t": "d", "title": "Comentá si tu Samsung puede hacer esto", "url": "https://www.instagram.com/p/DecSe8xvgbD/", "views": "100 mil vistas y 142 comentarios", "who": "el local de San Luis, en 16 segundos", "word": "no hace falta: que discutan", "s": [["Qué hacés", "Hacés con un iPhone lo mismo que en el video original, mientras lo decís con cara de desafío."], ["Lo que decís", "Decime un Samsung que pueda hacer esto. Un solo Samsung. Samsung, esto no lo hace. No aguanta la presión."]], "tip": "16 segundos como el original. Mirá primero el video para copiar exactamente qué le hace al iPhone."}, {"id": "b22", "t": "s", "title": "Canje en el local: el iPhone venía con cuenta", "url": "https://www.instagram.com/p/DaNmQcmRLzp/", "views": "402 mil vistas", "who": "@tecnohouse.ba (local de González Catán)", "word": "CANJE", "s": [["Arrancá", "Se escucha: \"Sí, tiene una cuenta acá\". Mostrás el iPhone que el cliente deja en parte de pago."], ["Después", "Le preguntás el nombre y arrancás la transferencia de datos: \"Calculá una horita, depende de lo que tengas ocupado. Tomá asiento y te mantengo al tanto\"."], ["Después", "Ya terminó la transferencia. Elegís con él funda y protector de cámara y se lo dejás equipado."], ["Después", "Le sacás la cuenta del equipo viejo con él: \"¿Termina con @icloud? Es tu cuenta, ponela así la sacamos\"."], ["Cerrá", "Se lo entregás listo. Texto en pantalla: Canje de [modelo] a [modelo] en MobileStore. Comentá CANJE, contame qué tenés y te digo por cuál lo podés cambiar."]], "tip": "Es un vlog real de un canje, como el original (casi 2 minutos). Grabá todo el proceso con un cliente que acepte salir y después lo editás. Sin decir precios."}]}</script>
+<script type="application/json" id="bankdata">[{"id": "b01", "t": "d", "title": "¿Cuánto tarda Messi en comprarse un iPhone 18 Pro Max?", "url": "https://www.instagram.com/reel/DeNOLNdh7Os/", "views": "655 mil vistas", "who": "un local de iPhone de Uruguay (lo hizo con Luis Suárez)", "word": "MESSI", "s": [["Arrancá", "¿Cuánto tiempo le llevaría a Messi comprarse este iPhone 18 Pro Max?"], ["Después", "Según [fuente], Messi en el Inter Miami cobra unos [X] dólares por semana. Básicamente, un sueldo promedio acá en Argentina."], ["Después", "Dividiendo por los 7 días de la semana, si a la calculadora no se le acabaron las pilas, nos da unos [X] dólares por día. Y si lo dividimos por las 24 horas, unos [X] dólares por hora."], ["Después", "Antes de decirte cuánto tardaría Leo, si sos de los que les encanta el mundo iPhone, no te olvides de seguirnos."], ["Después", "Messi tardaría nada más ni nada menos que [X horas] en comprarse el 18 Pro Max, que acá en MobileStore está [precio]."], ["Cerrá", "Pero si no sos Messi y lo querés igual, te tomamos tu iPhone como parte de pago y tenés cuotas. Comentá MESSI y te digo cuál te conviene a vos."]], "tip": "Mismo orden que el original: pregunta, sueldo, cuenta con la calculadora, pedido de seguir a la mitad, resultado, cierre. Calculadora en pantalla.", "test": false}, {"id": "b02", "t": "s", "title": "3 cosas antes de pasarte de Android a iPhone", "url": "https://www.instagram.com/p/DRfi688jqet/", "views": "134 mil vistas", "who": "el mismo local de Uruguay", "word": "LISTA", "s": [["Arrancá", "Nunca saltes de Android a iPhone sin antes conocer estas cuatro cosas. Si no sabés la última, estás en el horno."], ["Uno", "A mayor tamaño, mejor batería. Los Plus y los Pro Max son los más grandes, sea la generación que sea, y siempre tienen mejor batería que el resto."], ["Dos", "Evitá los Mini. El 12 y el 13 Mini casi no cambian de precio con la versión normal y no valen la pena: batería chica que no dura nada."], ["Tres", "Muchos modelos ya no se fabrican. Cuando Apple saca uno nuevo, deja de hacer el Pro y el Pro Max anterior. Si te venden un [modelo] Pro en caja sellada, tené cuidado."], ["Cuatro", "Comprá equipos liberados. Si no es libre, el dueño anterior puede no haber terminado de pagarlo y la compañía te lo bloquea."], ["Cerrá", "En MobileStore vendemos equipos libres con garantía y podés venir a verlos al local en [dirección]. Comentá LISTA y te digo cuál te conviene."]], "tip": "Igual que el original: 4 puntos numerados en pantalla, uno por toma. Dura cerca de un minuto como el original.", "test": false}, {"id": "b03", "t": "d", "title": "Le ofrecí plata a un desconocido para que me haga la publicidad", "url": "https://www.instagram.com/p/DehywFFvQIq/", "views": "480 mil vistas y 901 comentarios", "who": "un local de iPhone de San Luis", "word": "CONTRATADO", "s": [["Arrancá (en la vereda)", "Hermano, ¿cómo andamos? ¿Te querés ganar [monto] pesos?"], ["Después", "Yo soy del local de acá al lado. Necesito que me ayudes a hacer un video publicitario. ¿Te animás? Vení, acompañame."], ["Después (adentro, él improvisa)", "Le das el pie para que diga: si estás buscando un iPhone, tenés que venir a MobileStore. Todos los equipos con garantía y revisados, originales."], ["Cerrá", "Que él cierre con la dirección: vení a [dirección], Floresta. Vos agregás: ¿lo contratamos para el próximo? Comentá CONTRATADO."]], "tip": "Como el original: arranca en la calle con la propuesta de plata y termina con el desconocido haciendo la publicidad. Lo gracioso lo pone él. Pedile permiso para subirlo.", "test": false}, {"id": "b04", "t": "s", "title": "Canje antes de Black Friday", "url": "https://www.instagram.com/p/DeQJtuKMqEx/", "views": "te piden el modelo en comentarios", "who": "el local de San Luis", "word": "MODELO + %", "s": [["Arrancá", "Si tenés el iPhone 11, 12 o 13, ya es momento de que pegues el salto, sí o sí."], ["Después", "Tenemos stock, como ven acá (mostrás la vitrina), desde el [modelo] hasta el [modelo], para llevártelo en el momento."], ["Cerrá", "Si te interesa cambiar tu iPhone, dejame en los comentarios qué iPhone tenés y cuánto tiene de condición de batería, y te digo por cuál lo podés cambiar."]], "tip": "Corto como el original (unos 25 segundos): hablando a cámara con la vitrina atrás.", "test": false}, {"id": "b05", "t": "d", "title": "Comentá si tu Samsung puede hacer esto", "url": "https://www.instagram.com/p/DecSe8xvgbD/", "views": "100 mil vistas y 142 comentarios", "who": "el local de San Luis, en 16 segundos", "word": "no hace falta: que discutan", "s": [["Qué hacés", "Hacés con un iPhone lo mismo que en el video original, mientras lo decís con cara de desafío."], ["Lo que decís", "Decime un Samsung que pueda hacer esto. Un solo Samsung. Samsung, esto no lo hace. No aguanta la presión."]], "tip": "16 segundos como el original. Mirá primero el video para copiar exactamente qué le hace al iPhone.", "test": false}, {"id": "b06", "t": "s", "title": "Marketplace vs. MobileStore", "url": "https://www.instagram.com/p/DekySNuNoJw/", "views": "tu video que más pegó", "who": "vos mismo: \"Parece chiste pero es anécdota\"", "word": "la dirección del local", "s": [["Escena 1", "Texto: comprar un iPhone por Marketplace. Subís al 12C de un edificio viejo, una oficina rara, te lo dan y chau. ¿Y si falla? ¿A quién le reclamás?"], ["Escena 2", "Texto: comprarlo en MobileStore. Entrás desde la vereda, te atiende Enzo, lo probás y te lo llevás con garantía."], ["Cerrá", "Estamos en [dirección], Floresta. Vení a verlo en persona."]], "tip": "Hoy casi nadie toca la dirección en tu perfil. Este reel es para eso.", "test": false}, {"id": "b07", "t": "d", "title": "Lo que el cliente quiere vs. lo que puede pagar", "url": "https://www.instagram.com/reel/DbZeYjvuo2f/", "views": "687 mil vistas", "who": "el local de iPhone de Uruguay", "word": "CUOTAS", "s": [["Escena 1", "Texto: lo que el cliente quiere. Entra alguien pidiendo el 18 Pro Max de [capacidad] en el color nuevo."], ["Escena 2", "Texto: lo que puede pagar. Se va con [modelo más barato] y cara de resignado."], ["Cerrá", "Y si querés el que querés de verdad, comentá CUOTAS y te paso cómo pagarlo."]], "tip": "Sketch de 20 a 30 segundos. Actuado, con alguien del local.", "test": false}, {"id": "b08", "t": "d", "title": "Dejamos la vergüenza de lado", "url": "https://www.instagram.com/p/DchD0gbB7nU/", "views": "252 mil vistas", "who": "un servicio técnico (8 segundos)", "word": "no hace falta", "s": [["Qué hacés", "Un baile o una tendencia de audio en el local, con todo el equipo, en menos de 10 segundos. [elegir un audio en tendencia]"], ["Texto en pantalla", "Dejamos la vergüenza de lado en nuestros reels"]], "tip": "Corto y con audio en tendencia. Es solo para alcance.", "test": false}, {"id": "b09", "t": "d", "title": "Te buscamos desde el cielo (dron del local)", "url": "https://www.instagram.com/p/DfGCxYJuKIo/", "views": "88 mil vistas", "who": "el local de San Luis", "word": "no hace falta", "s": [["Qué hacés", "Toma desde arriba (dron o desde un balcón) que baja hasta la puerta de MobileStore."], ["Texto en pantalla", "Ahora te buscamos desde el cielo. Estamos en [dirección], Floresta."]], "tip": "Sirve para que la gente ubique el local.", "test": false}, {"id": "b10", "t": "d", "title": "El personaje del local (serie)", "url": "https://www.instagram.com/p/Dess2eRs9D2/", "views": "61 mil vistas y 136 comentarios", "who": "el local de San Luis (personaje \"Dani\")", "word": "¿VUELVE?", "s": [["Arrancá", "¿Se acuerdan de [personaje]? Volvió."], ["Después", "Mostrás al mismo personaje del video del desconocido haciendo algo nuevo en el local: atendiendo, probando un iPhone, haciendo la publicidad."], ["Cerrá", "¿Lo dejamos trabajando con nosotros? Comentá VUELVE."]], "tip": "Solo si el video del desconocido pegó. La serie hace que vuelvan a verte.", "test": false}, {"id": "b11", "t": "d", "title": "Le pegamos al iPhone 18 Pro para ver si aguanta", "url": "https://www.instagram.com/p/DeKpU2AhObR/", "views": "26 mil vistas", "who": "el local de Uruguay (videos de prueba de resistencia)", "word": "AGUANTA", "s": [["Arrancá", "¿Los iPhone no duran nada? Vamos a ver."], ["Después", "Mostrás clips de pruebas de resistencia (rayones, llaves, calor). [usar videos de prueba o hacer una prueba suave con un equipo de exhibición]"], ["Cerrá", "Mandáselo al que dice que los iPhone no duran. Y si querés el tuyo, comentá AGUANTA."]], "tip": "No rompas un equipo de venta. Usá clips de pruebas o algo suave.", "test": false}, {"id": "b12", "t": "s", "title": "¿Vale la pena un iPhone 11 en 2026?", "url": "https://www.instagram.com/p/DefPv3KBxGi/", "views": "22 mil vistas", "who": "el local de Uruguay", "word": "11", "s": [["Arrancá", "¿Todavía vale la pena comprar un iPhone 11?"], ["Después", "Sirve si querés entrar a iPhone gastando poco. Pero ojo con la batería y con que cada vez recibe menos actualizaciones."], ["Después", "A veces poner un poco más hoy te ahorra problemas mañana."], ["Cerrá", "Comentá 11 y te digo qué te conviene según lo que querés gastar."]], "tip": "Con el 11 en la mano.", "test": false}, {"id": "b13", "t": "s", "title": "Te muestro los iPhone que tenemos para Black Friday", "url": "https://www.instagram.com/p/DewuXtmh-Ur/", "views": "143 mil vistas", "who": "el local de San Luis", "word": "STOCK", "s": [["Arrancá", "Te muestro todos los iPhone que tenemos para Black Friday."], ["Después", "Recorrés la vitrina modelo por modelo, rápido, mostrando colores y capacidades. Sin decir precios."], ["Cerrá", "Comentá STOCK, contame qué buscás y te digo cuál te conviene."]], "tip": "Rápido, un modelo cada 2-3 segundos. Nada de precios en el video.", "test": false}, {"id": "b14", "t": "s", "title": "Preguntas que nos hacen siempre", "url": "https://www.instagram.com/p/DQ47C-sjhd2/", "views": "16 comentarios", "who": "el local de Uruguay", "word": "INFO", "s": [["Arrancá", "Respondo las preguntas que más me hacen."], ["Uno", "¿Compran equipos? [respuesta: ej. no compramos, pero los tomamos como parte de pago]."], ["Dos", "¿Tienen cuotas? [sí o no, sin decir montos]."], ["Tres", "¿Dan garantía? [cuánto tiempo y por escrito]."], ["Cerrá", "¿Tenés otra duda? Comentá INFO, contame qué buscás y te asesoro."]], "tip": "Rompe las dudas que frenan la compra. Respuestas cortas.", "test": false}, {"id": "b15", "t": "s", "title": "Mostranos este reel y te regalamos algo", "url": "https://www.instagram.com/p/DeUYh29hzVK/", "views": "67 mil vistas", "who": "el local de San Luis", "word": "REGALO", "s": [["Arrancá", "¿Estás por comprarte un iPhone?"], ["Después", "Si venís al local y nos mostrás este reel, te regalamos [regalo, ej. una funda y el vidrio]."], ["Cerrá", "Comentá REGALO, contame qué modelo buscás y te espero en [dirección]."]], "tip": "Así sabés cuántos vinieron por Instagram. Sin precios.", "test": false}, {"id": "b16", "t": "s", "title": "Antes de comprar un usado, revisá esto", "url": "https://www.instagram.com/p/DfQi69DhhHN/", "views": "formato de confianza", "who": "el local de Uruguay", "word": "USADO", "s": [["Arrancá", "¿Cómo saber si un iPhone usado es seguro antes de comprarlo?"], ["Uno", "Si el precio es demasiado bueno, desconfiá."], ["Dos", "Que el dueño anterior saque su cuenta de iCloud delante tuyo."], ["Tres", "Fijate la condición de batería en Ajustes."], ["Cerrá", "En MobileStore te lo damos restablecido y con garantía. Comentá USADO y te paso los que tenemos."]], "tip": "Menos de 45 segundos. Mostrá cada paso en el celular.", "test": false}, {"id": "b17", "t": "d", "title": "POV: le entrego un iPhone a un cliente", "url": "https://www.instagram.com/p/DeKVs10p5Ok/", "views": "1,75 millones de vistas y 1.643 comentarios", "who": "@jhanvende (Chile), vende lentes Meta con entregas en POV", "word": "EQUIPO", "s": [["Qué hacés", "Grabás en primera persona (POV) la entrega de un iPhone: llegás, el cliente lo abre, reacción, charla corta."], ["Texto en pantalla", "POV: entregando un [modelo] a un cliente de [barrio]"], ["Cerrá", "¿Qué equipo querés que te entregue a vos? Comentá EQUIPO."]], "tip": "Celular en el pecho o en la mano. Que se vea la cara del cliente (con permiso). Sin guion: lo natural vende.", "test": false}, {"id": "b18", "t": "d", "title": "La clienta se olvidó de pagarnos", "url": "https://www.instagram.com/p/DXVHdPKjHiY/", "views": "1,8 millones de vistas", "who": "@dsdphone (revende iPhone en CABA)", "word": "CANJE", "s": [["Arrancá", "Texto: el cliente se fue sin pagarnos 😬"], ["Después", "Contás en POV una venta con canje donde pasó algo inesperado (que se fue apurado, que se olvidó algo). [usar una anécdota real]"], ["Cerrá", "Igual se llevó su [modelo] dejando el suyo en parte de pago. Comentá CANJE y te cotizo el tuyo."]], "tip": "Storytime corto con una anécdota real del local. El gancho es la frase rara del principio.", "test": false}, {"id": "b19", "t": "d", "title": "¿Ustedes qué hubieran hecho?", "url": "https://www.instagram.com/p/DXb98PkDFs4/", "views": "990 mil vistas y 269 comentarios", "who": "@dsdphone (revende iPhone en CABA)", "word": "sin palabra: que opinen", "s": [["Arrancá", "Me pasó esto con un cliente y no sé si hice bien."], ["Después", "Contás una situación real que generó dudas: un cliente que pidió rebaja, uno que quiso devolver, uno que trajo un equipo con iCloud. [anécdota real]"], ["Cerrá", "¿Ustedes qué hubieran hecho? Los leo en comentarios."]], "tip": "El dilema hace que comenten. Contalo como si fuera a un amigo.", "test": false}, {"id": "b20", "t": "d", "title": "¡Apple nos acaba de demandar!", "url": "https://www.instagram.com/p/DfIP1CEOlJk/", "views": "108 mil vistas y 71 comentarios", "who": "@giancarlo_santamaria (vende iPhone en Colombia)", "word": "no hace falta", "s": [["Arrancá", "¡Apple nos acaba de demandar!"], ["Después", "Giro gracioso: es porque [motivo absurdo, ej. vendemos los iPhone más baratos que ellos / tenemos más stock que el Apple Store]."], ["Cerrá", "Así que aprovechá antes de que nos cierren. Estamos en [dirección]."]], "tip": "Gancho exagerado y giro con humor. Cara de preocupado al principio.", "test": false}, {"id": "b21", "t": "d", "title": "Concurso en el local: votá en comentarios", "url": "https://www.instagram.com/p/DfKUM0PxElx/", "views": "41 comentarios votando", "who": "@giancarlo_santamaria (concurso de disfraces del equipo)", "word": "el número que votás", "s": [["Arrancá", "¿Quién se gana [premio]? Votá en comentarios."], ["Después", "Mostrás 3 o 4 opciones numeradas: [ej. el arbolito de Navidad de cada uno del equipo, o el mejor disfraz]."], ["Cerrá", "Comentá el número de tu favorito. El más votado gana."]], "tip": "Ideal para Navidad. Al otro día subís el ganador: así vuelven a verte.", "test": false}, {"id": "b22", "t": "s", "title": "Canje en el local: el iPhone venía con cuenta", "url": "https://www.instagram.com/p/DaNmQcmRLzp/", "views": "402 mil vistas", "who": "@tecnohouse.ba (local de González Catán)", "word": "CANJE", "s": [["Arrancá", "Se escucha: \"Sí, tiene una cuenta acá\". Mostrás el iPhone que el cliente deja en parte de pago."], ["Después", "Le preguntás el nombre y arrancás la transferencia de datos: \"Calculá una horita, depende de lo que tengas ocupado. Tomá asiento y te mantengo al tanto\"."], ["Después", "Ya terminó la transferencia. Elegís con él funda y protector de cámara y se lo dejás equipado."], ["Después", "Le sacás la cuenta del equipo viejo con él: \"¿Termina con @icloud? Es tu cuenta, ponela así la sacamos\"."], ["Cerrá", "Se lo entregás listo. Texto en pantalla: Canje de [modelo] a [modelo] en MobileStore. Comentá CANJE, contame qué tenés y te digo por cuál lo podés cambiar."]], "tip": "Es un vlog real de un canje, como el original (casi 2 minutos). Grabá todo el proceso con un cliente que acepte salir y después lo editás. Sin decir precios.", "test": false}, {"id": "b23", "t": "s", "title": "Mirá lo que le pasó por no cambiar la batería", "url": "https://www.instagram.com/p/DczFo2uteD1/", "views": "25 mil vistas", "who": "@tecnohouse.ba (local de González Catán)", "word": "BATERÍA", "s": [["Arrancá", "Mirá lo que le pasó a este iPhone por no cambiar la batería a tiempo."], ["Después", "Mostrás la batería hinchada o el equipo levantado. [usar un caso real del local]"], ["Después", "Si te dura menos de medio día o marca menos de [80%], es momento de cambiarla."], ["Cerrá", "Comentá BATERÍA, decime tu modelo y te digo si ya hay que cambiarla."]], "tip": "Tu video de batería ya fue el mejor de venta. Este lo repite con un caso visual.", "test": false}, {"id": "b24", "t": "s", "title": "No quiso pagar en cuotas y le salió más caro", "url": "https://www.instagram.com/p/Dac57WQxT4Q/", "views": "45 mil vistas", "who": "@tecnohouse.ba (local de González Catán)", "word": "CUOTAS", "s": [["Arrancá", "Este cliente no quiso pagar como le recomendamos y le salió más caro."], ["Después", "Explicás simple por qué conviene una forma de pago y no otra. [cuotas, transferencia, efectivo: sin decir montos]"], ["Cerrá", "Comentá CUOTAS y te digo cómo te conviene pagar el tuyo."]], "tip": "Saca la objeción de cómo pagar. Sin precios en pantalla.", "test": false}, {"id": "b25", "t": "d", "title": "🧪 Test Blindados: le pego con llaves a la pantalla", "url": "https://www.instagram.com/p/DeKpU2AhObR/", "views": "formato de prueba de resistencia (26 mil vistas)", "who": "el local de Uruguay, adaptado al Blindado", "word": "BLINDADO", "s": [["Arrancá", "Le voy a pegar a la pantalla de este iPhone con las llaves. ¿Aguanta?"], ["Qué hacés", "Mostrás que el equipo tiene el Blindado. Rayás la pantalla con llaves y monedas, de cerca, y la limpiás: sin rayones. [usar un equipo de prueba, nunca uno de un cliente]"], ["Cerrá", "Así queda con el Blindado. Comentá BLINDADO y te cuento cómo funciona."]], "tip": "Primer plano de la pantalla y buena luz, que se vea que no queda ni una marca. Es una prueba: medí cuántos comentan.", "test": true}, {"id": "b26", "t": "s", "title": "🧪 Test Blindados: con y sin protección", "url": "https://www.instagram.com/p/DeKpU2AhObR/", "views": "formato de prueba de resistencia", "who": "el local de Uruguay, adaptado al Blindado", "word": "BLINDADO", "s": [["Arrancá", "Dos pantallas: una con Blindado y otra sin nada. Mirá qué pasa."], ["Qué hacés", "Hacés la misma prueba en las dos, lado a lado: llaves, cutter suave, una caída corta. [usar dos pantallas o vidrios de prueba]"], ["Cerrá", "¿Vos con cuál andás? Comentá BLINDADO y te digo si el tuyo lo puede llevar."]], "tip": "Pantalla partida en dos en la edición, izquierda con y derecha sin. Es una prueba: medí cuántos comentan.", "test": true}]</script>
+<div id="root"></div>
+<script id="appjs">
+(function(){
+const DAYS=["Lun","Mar","Mié","Jue","Vie","Sáb"];
+let WEEK;try{WEEK=JSON.parse(document.getElementById("weekdata").textContent)}catch(_){WEEK={label:"",key:"ms",items:[]}}
+let st={};try{st=JSON.parse(localStorage.getItem(WEEK.key)||"{}")}catch(_){}
+let BANK=[];try{BANK=JSON.parse((document.getElementById("bankdata")||{}).textContent||"[]")}catch(_){}
+let ov={};try{ov=JSON.parse(localStorage.getItem(WEEK.key+"-ov")||"{}")}catch(_){}
+const saveOv=()=>{try{localStorage.setItem(WEEK.key+"-ov",JSON.stringify(ov))}catch(_){}};
+const itemFor=i=>{const b=ov[i]&&BANK.find(x=>x.id===ov[i]);return b?b:WEEK.items[i]};
+const save=()=>{try{localStorage.setItem(WEEK.key,JSON.stringify(st))}catch(_){}};
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fill=s=>esc(s).replace(/\[([^\]]+)\]/g,'<mark>$1</mark>');
+const safeUrl=u=>/^https:\/\/(www\.)?(instagram\.com|tiktok\.com|vt\.tiktok\.com)\//.test(u||"")?u:"#";
+const root=document.getElementById("root");
+let cur=(()=>{const d=new Date().getDay();return d>=1&&d<=6?d-1:0})();
+if(cur>=WEEK.items.length)cur=0;
+let fs=36, mode="enzo", owner=false, db=null, artifact=null, bank=[], bankState="loading", draft=null, sugerida=null, pickFor=null, pickFilter="all", confirmPub=false, statusMsg="";
+
+/* ---------- Vista de Enzo ---------- */
+function enzoView(){
+  const R=WEEK.items.map((_,i)=>itemFor(i)), r=R[cur];
+  if(!r) return `<div class="wrap"><p class="empty">Todavía no hay reels cargados para esta semana.</p></div>`;
+  const n=R.filter((_,i)=>st[i]).length, has=r.s.some(([,v])=>String(v).includes("["));
+  return `<div class="wrap">${owner?ownBar():""}
+  <div class="head"><span class="brand">MobileStore · Reels</span><span class="week">${esc(WEEK.label)}</span></div>
+  <nav class="days" aria-label="Días">${R.map((x,i)=>`<button type="button" data-day="${i}" class="${i===cur?"cur ":""}${st[i]?"done":""}" aria-label="${esc(DAYS[i]+": "+x.title)}">${DAYS[i]}<small>${st[i]?"✓ listo":(x.t==="d"?"nuevo":"vender")}</small></button>`).join("")}</nav>
+  <p class="count">${n===R.length?"¡Semana completa! Avisale a Franco cuántas consultas te entraron.":`Llevás ${n} de ${R.length} subidos`}</p>
+  <main class="screen">
+    <span class="type ${r.t}">${r.t==="d"?"Para que te conozca gente nueva":"Para vender"}</span>
+    <h1>${esc(r.title)}</h1>
+    ${BANK.length?`<div class="swap"><button type="button" data-act="epick">🔄 Cambiar este reel</button>${ov[cur]?`<button type="button" data-act="eback">↩ Volver al que eligió Franco</button>`:""}</div>`:""}
+    <section class="step"><div class="sn"><i>1</i>Mirá el video que vas a copiar</div>
+      <a class="big watch" href="${esc(safeUrl(r.url))}" target="_blank" rel="noopener">▶ Ver el video original</a>
+      <p class="proof">Lo hizo ${esc(r.who)}: <b>${esc(r.views)}</b>. Copiá cómo lo hace.</p></section>
+    <section class="step"><div class="sn"><i>2</i>Grabá esto</div>
+      ${has?'<p class="warn">Lo amarillo lo completás vos antes de grabar.</p>':''}
+      <div class="lines">${r.s.map(([k,v])=>`<p><span class="k">${esc(k)}</span>${fill(v)}</p>`).join("")}</div>
+      <div class="word">Al final pedí que comenten: <b>${esc(r.word)}</b></div>
+      ${r.tip?`<p class="tip">💡 ${esc(r.tip)}</p>`:""}
+      <button class="big rec" type="button" data-act="tele">🎬 Leer el guion mientras grabo</button></section>
+    <section class="step"><div class="sn"><i>3</i>Cuando lo subas, tocá acá</div>
+      <button class="big up ${st[cur]?"yes":""}" type="button" data-act="up">${st[cur]?"✓ Ya lo subí":"Ya lo subí"}</button></section>
+    <div class="nav"><button type="button" data-act="prev" ${cur===0?"disabled":""}>← Anterior</button><button type="button" data-act="next" ${cur===R.length-1?"disabled":""}>Siguiente →</button></div>
+    <p class="end">Cualquier duda, mandale un audio a Franco.</p>
+  </main>${pickFor!=null&&mode==="enzo"?pickView():""}</div>`;
+}
+function teleView(){
+  const r=itemFor(cur);
+  return `<div class="tele" role="dialog" aria-label="Guion para grabar"><div class="tb"><button type="button" data-act="teleclose">✕ Cerrar</button><span>Leé de acá mientras grabás</span><div class="sz"><button type="button" data-act="smaller" aria-label="Letra más chica">A−</button><button type="button" data-act="bigger" aria-label="Letra más grande">A+</button></div></div>
+  <div class="txt" style="font-size:${fs}px">${r.s.map(([,v])=>`<p>${fill(v)}</p>`).join("")}</div></div>`;
+}
+
+/* ---------- Modo dueño ---------- */
+function ownBar(){
+  return `<div class="ownbar"><span>Solo vos ves esta barra</span>${mode==="enzo"?`<button type="button" data-act="toedit">✏️ Armar semana</button>`:`<button type="button" data-act="toenzo">👀 Ver como Enzo</button>`}</div>`;
+}
+function editView(){
+  const D=draft;
+  return `<div class="wrap">${ownBar()}<section class="edit">
+    <h2>Armar la semana de Enzo</h2>
+    <p class="status">Cambiá lo que no te guste. Enzo no ve nada hasta que toques <b>Publicar para Enzo</b>.</p>
+    <label>Semana (lo que ve arriba)<input id="lbl" type="text" value="${esc(D.label)}"></label>
+    <div class="row">${sugerida?`<button class="btn" type="button" data-act="loadsug">📥 Cargar la semana sugerida (${esc(sugerida.label||"")})</button>`:""}
+      <span class="status">${bankState==="loading"?"Cargando el banco de ideas…":bankState==="slow"?"El banco de ideas tarda en cargar; podés seguir editando.":bankState==="error"?"No se pudo cargar el banco de ideas.":`Banco: ${bank.length} ideas`}</span></div>
+    ${D.items.map((x,i)=>`<div class="slot"><div class="top"><span class="d">${DAYS[i]}</span><span class="pill ${x.t}">${x.t==="d"?"Gente nueva":"Para vender"}</span></div>
+      <h3>${esc(x.title)}</h3><p class="meta"><a href="${esc(safeUrl(x.url))}" target="_blank" rel="noopener">▶ original</a> · ${esc(x.views)} · palabra: ${esc(x.word)}</p>
+      <div class="row"><button class="btn" type="button" data-act="pick" data-i="${i}">🔄 Cambiar</button><button class="btn ghost" type="button" data-act="edtx" data-i="${i}">✍️ ${x._open?"Cerrar guion":"Editar guion"}</button></div>
+      ${x._open?`<label>Guion (una línea por parte: "Parte: texto"; lo que va entre [corchetes] sale en amarillo)<textarea data-g="${i}">${esc(x.s.map(([k,v])=>k+": "+v).join("\n"))}</textarea></label>
+      <label>Palabra para comentar<input type="text" data-w="${i}" value="${esc(x.word)}"></label>
+      <label>Consejo para grabar<input type="text" data-tp="${i}" value="${esc(x.tip||"")}"></label>`:""}</div>`).join("")}
+    <button class="big" type="button" data-act="publish" style="background:var(--own);color:var(--on)">${confirmPub?"¿Seguro? Tocá de nuevo para publicar":"🚀 Publicar para Enzo"}</button>
+    <p class="status" aria-live="polite">${esc(statusMsg)}</p>
+  </section>${pickFor!=null?pickView():""}</div>`;
+}
+function pickView(){
+  const ed=mode==="edit";
+  const inWeek=new Set(ed?draft.items.map(x=>x.id):WEEK.items.map((_,i)=>itemFor(i).id));
+  const src=ed?bank:BANK;
+  const list=src.filter(b=>pickFilter==="all"||b.t===pickFilter);
+  return `<div class="sheet" data-act="closepick"><div class="in" data-stop="1" role="dialog" aria-label="Elegir reel">
+    <div class="hd"><b>Elegí para el ${DAYS[pickFor]}</b><button class="btn ghost" type="button" data-act="closepick">✕</button></div>
+    <div class="chips">${[["all","Todos"],["d","Gente nueva"],["s","Para vender"]].map(([k,l])=>`<button type="button" data-act="filt" data-f="${k}" class="${pickFilter===k?"on":""}">${l}</button>`).join("")}</div>
+    ${list.length?list.map(b=>`<div class="opt"><div class="r"><span class="pill ${b.t}">${b.t==="d"?"Gente nueva":"Para vender"}</span>${b.test?'<span class="pill t">🧪 prueba</span>':""}${inWeek.has(b.id)?'<span class="used">ya está en la semana</span>':""}</div>
+      <h4>${esc(b.title)}</h4><p>${esc(b.views)} · ${esc(b.who)}</p>
+      <div class="row" style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn ghost" href="${esc(safeUrl(b.url))}" target="_blank" rel="noopener" style="text-decoration:none">▶ Ver</a><button class="btn solid" type="button" data-act="choose" data-id="${esc(b.id)}">${ed?"Elegir":"Usar este"}</button></div></div>`).join(""):`<p class="empty">${!ed||bankState==="ready"?"No hay ideas de este tipo todavía.":"El banco todavía está cargando."}</p>`}
+  </div></div>`;
+}
+
+/* ---------- Render y eventos ---------- */
+let tele=false;
+function render(){
+  syncDraft();
+  root.innerHTML=(mode==="edit"&&owner&&draft?editView():enzoView())+(tele&&mode==="enzo"?teleView():"");
+}
+function syncDraft(){
+  if(!draft)return;
+  root.querySelectorAll("textarea[data-g]").forEach(t=>{const i=+t.dataset.g;draft.items[i].s=t.value.split("\n").map(l=>l.trim()).filter(Boolean).map(l=>{const m=l.match(/^([^:]{1,30}):\s*(.*)$/);return m?[m[1].trim(),m[2]]:["",l]})});
+  root.querySelectorAll("input[data-w]").forEach(t=>{draft.items[+t.dataset.w].word=t.value});
+  root.querySelectorAll("input[data-tp]").forEach(t=>{draft.items[+t.dataset.tp].tip=t.value});
+  const l=root.querySelector("#lbl");if(l)draft.label=l.value;
+}
+root.addEventListener("click",e=>{
+  const el=e.target.closest("[data-act],[data-day]");if(!el)return;
+  if(el.dataset.stop&&!e.target.closest("[data-act]"))return;
+  if(el.dataset.day!=null){cur=+el.dataset.day;render();return}
+  const a=el.dataset.act;
+  if(a==="closepick"&&e.target.closest("[data-stop]")&&!e.target.closest('button[data-act="closepick"]'))return;
+  switch(a){
+    case "prev":cur--;render();scrollTo(0,0);break;
+    case "next":cur++;render();scrollTo(0,0);break;
+    case "up":st[cur]=!st[cur];save();if(st[cur]&&cur<WEEK.items.length-1){render();setTimeout(()=>{cur++;render();scrollTo({top:0,behavior:"smooth"})},700)}else render();break;
+    case "tele":tele=true;render();try{navigator.wakeLock&&navigator.wakeLock.request("screen").catch(()=>{})}catch(_){};break;
+    case "teleclose":tele=false;render();break;
+    case "bigger":fs=Math.min(60,fs+4);render();break;
+    case "smaller":fs=Math.max(22,fs-4);render();break;
+    case "toedit":mode="edit";if(!draft)draft=JSON.parse(JSON.stringify(WEEK));confirmPub=false;statusMsg="";render();scrollTo(0,0);break;
+    case "toenzo":syncDraft();mode="enzo";render();scrollTo(0,0);break;
+    case "pick":syncDraft();pickFor=+el.dataset.i;pickFilter=draft.items[pickFor].t||"all";render();break;
+    case "closepick":pickFor=null;render();break;
+    case "filt":pickFilter=el.dataset.f;render();break;
+    case "choose":{if(mode==="edit"){const b=bank.find(x=>x.id===el.dataset.id);if(b){draft.items[pickFor]=cleanItem(b)};confirmPub=false}else{const b=BANK.find(x=>x.id===el.dataset.id);if(b){ov[cur]=b.id;saveOv();st[cur]=false;save()}};pickFor=null;render();scrollTo(0,0);break}
+    case "epick":pickFor=cur;pickFilter=itemFor(cur).t||"all";render();break;
+    case "eback":delete ov[cur];saveOv();render();break;
+    case "edtx":syncDraft();const it=draft.items[+el.dataset.i];it._open=!it._open;render();break;
+    case "loadsug":{syncDraft();const items=(sugerida.ids||[]).map(id=>bank.find(b=>b.id===id)).filter(Boolean).map(cleanItem);if(items.length){draft.items=items.slice(0,6);while(draft.items.length<6&&WEEK.items[draft.items.length])draft.items.push(WEEK.items[draft.items.length]);if(sugerida.label)draft.label=sugerida.label;statusMsg="Cargué la semana sugerida. Revisala y publicala.";}else statusMsg="La semana sugerida no tiene ideas que estén en el banco.";confirmPub=false;render();break}
+    case "publish":publish();break;
+  }
+});
+function cleanItem(b){return {id:b.id,t:b.t,title:b.title,url:b.url,views:b.views,who:b.who,word:b.word,s:(b.s||[]).map(p=>Array.isArray(p)?[String(p[0]),String(p[1])]:(p&&typeof p==="object")?[String(p.k||""),String(p.v||"")]:["",String(p)]),tip:b.tip||""}}
+
+/* ---------- Publicar (reescribe la página con la semana nueva) ---------- */
+async function publish(){
+  syncDraft();
+  if(!confirmPub){confirmPub=true;statusMsg="";render();return}
+  confirmPub=false;
+  if(!artifact){statusMsg="No pude publicar desde acá. Pedímelo en el chat.";render();return}
+  const week={label:draft.label||WEEK.label,key:"ms-"+Date.now(),items:draft.items.slice(0,6).map(cleanItem)};
+  const json=JSON.stringify(week).replace(/</g,"\\u003c");
+  const css=document.getElementById("appcss").textContent;
+  const js=document.getElementById("appjs").textContent;
+  const head=document.querySelector('link[rel="stylesheet"]');
+  const doc='<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.4 system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body>'
+   +'<title>Menú MobileStore</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n'
+   +'<link rel="stylesheet" href="'+(head?head.getAttribute("href"):"")+'">\n'
+   +'<style id="appcss">'+css+'</style>\n'
+   +'<script type="application/json" id="weekdata">'+json+'<\/script>\n'
+   +'<script type="application/json" id="bankdata">'+JSON.stringify((bank.length?bank:BANK).map(b=>Object.assign(cleanItem(b),{test:!!b.test}))).replace(/</g,"\\u003c")+'<\/script>\n<div id="root"></div>\n'
+   +'<script id="appjs">'+js+'<\/script>'
+   +'</body></html>';
+  statusMsg="Publicando…";render();
+  try{await artifact.publish(doc);statusMsg="Listo, Enzo ya ve la semana nueva.";}
+  catch(err){const c=err&&err.code;statusMsg=c==="conflict"?"Se publicó otra versión al mismo tiempo. Volvé a intentar.":"No se pudo publicar ("+(c||"error")+").";render()}
+}
+
+/* ---------- Arranque ---------- */
+render();
+(async()=>{
+  const user=await (window.claude&&claude.use?claude.use("user"):null);
+  owner=user?await user.isOwner():false;
+  if(!owner)return;
+  render();
+  artifact=await claude.use("artifact");
+  db=await claude.use("db");
+  if(!db){bankState="error";render();return}
+  const t=setTimeout(()=>{if(bankState==="loading"){bankState="slow";render()}},10000);
+  db.collection("banco").onSnapshot(s=>{if(!s.metadata.fromCache)clearTimeout(t);bank=s.docs.map(d=>Object.assign({id:d.id},d.data())).sort((a,b)=>String(b.agregado||"").localeCompare(String(a.agregado||""))||a.id.localeCompare(b.id));bankState="ready";if(mode==="edit")render()},()=>{clearTimeout(t);bankState="error";if(mode==="edit")render()});
+  db.doc("semana/sugerida").onSnapshot(d=>{sugerida=d.exists?d.data():null;if(mode==="edit")render()},()=>{});
+})();
+})();
+</script>
+
+</body></html>
