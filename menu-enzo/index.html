@@ -1,4 +1,4 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.4 system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Menú MobileStore</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@600;700&family=Figtree:wght@400;500;600;700&display=swap">
@@ -125,6 +125,31 @@ const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",
 const fill=s=>esc(s).replace(/\[([^\]]+)\]/g,'<mark>$1</mark>');
 const safeUrl=u=>/^https:\/\/(www\.)?(instagram\.com|tiktok\.com|vt\.tiktok\.com)\//.test(u||"")?u:"#";
 const root=document.getElementById("root");
+/* ---------- Sincronización (Supabase): lo que marca Enzo lo ve Franco ---------- */
+const SB="https://gjrlzyqwxybwzobmqmpb.supabase.co/rest/v1/rpc/",SBK="sb_publishable_KZRHEhFxtTIvpfV_XCTv-A_Zt4p6oYA";
+const PUB=!window.claude, isPanel=PUB&&/[?&]panel\b/.test(location.search);
+let remote=[], remoteState="loading", lastPull=null;
+async function rpc(fn,body){const r=await fetch(SB+fn,{method:"POST",headers:{"apikey":SBK,"Content-Type":"application/json"},body:JSON.stringify(body)});if(!r.ok)throw new Error(String(r.status));const t=await r.text();return t?JSON.parse(t):null}
+function push(i){if(!PUB||isPanel)return;const it=itemFor(i);rpc("menu_marcar",{p_alumno:"enzo",p_week:WEEK.key,p_dia:i,p_subido:!!st[i],p_cambio:ov[i]||"",p_titulo:String(it&&it.title||"").slice(0,200)}).catch(()=>{})}
+async function pull(){
+  try{const rows=await rpc("menu_estado",{p_alumno:"enzo",p_week:WEEK.key})||[];remote=rows;remoteState="ok";lastPull=new Date();
+    if(!isPanel){rows.forEach(r=>{st[r.dia]=!!r.subido;if(r.cambio_id&&BANK.find(b=>b.id===r.cambio_id))ov[r.dia]=r.cambio_id;else delete ov[r.dia]});save();saveOv()}
+  }catch(_){remoteState="error"}
+  render();
+}
+function panelView(){
+  const by={};remote.forEach(r=>by[r.dia]=r);
+  const n=WEEK.items.filter((_,i)=>by[i]&&by[i].subido).length;
+  const inWeek=new Set(WEEK.items.map((x,i)=>by[i]&&by[i].cambio_id||x.id));
+  const left=BANK.filter(b=>!inWeek.has(b.id)).length;
+  const when=d=>{const t=new Date(d);return t.toLocaleDateString("es-AR",{weekday:"short",day:"numeric"})+" "+t.toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"})};
+  return `<div class="wrap"><div class="head"><span class="brand">Panel de Franco · Enzo</span><span class="week">${esc(WEEK.label)}</span></div>
+  <p class="count" style="margin-top:12px">${remoteState==="error"?"No pude leer los datos. Reintento solo en unos segundos.":`Subió <b>${n} de ${WEEK.items.length}</b> · se actualiza solo cada 15 segundos${lastPull?" (última: "+lastPull.toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit",second:"2-digit"})+")":""}`}</p>
+  <section class="edit">${WEEK.items.map((x,i)=>{const r=by[i],ch=r&&r.cambio_id?BANK.find(b=>b.id===r.cambio_id):null,it=ch||x;
+    return `<div class="slot"><div class="top"><span class="d">${DAYS[i]}</span><span class="pill ${it.t}">${it.t==="d"?"Gente nueva":"Para vender"}</span>${r&&r.subido?'<span class="pill" style="background:var(--ok-soft);color:var(--ok)">✓ Subido</span>':'<span class="pill" style="background:var(--line);color:var(--muted)">Sin subir</span>'}${ch?'<span class="pill t">🔄 Lo cambió</span>':""}</div>
+    <h3>${esc(it.title)}</h3>${ch?`<p class="meta">Tu elección era: ${esc(x.title)}</p>`:""}${r?`<p class="meta">Último toque: ${esc(when(r.updated_at))}</p>`:""}</div>`}).join("")}
+  <p class="status">Quedan <b>${left}</b> ideas sin usar en el banco para cambiar.</p></section></div>`;
+}
 let cur=(()=>{const d=new Date().getDay();return d>=1&&d<=6?d-1:0})();
 if(cur>=WEEK.items.length)cur=0;
 let fs=36, mode="enzo", owner=false, db=null, artifact=null, bank=[], bankState="loading", draft=null, sugerida=null, pickFor=null, pickFilter="all", confirmPub=false, statusMsg="";
@@ -165,7 +190,7 @@ function teleView(){
 
 /* ---------- Modo dueño ---------- */
 function ownBar(){
-  return `<div class="ownbar"><span>Solo vos ves esta barra</span>${mode==="enzo"?`<button type="button" data-act="toedit">✏️ Armar semana</button>`:`<button type="button" data-act="toenzo">👀 Ver como Enzo</button>`}</div>`;
+  return `<div class="ownbar"><span>Solo vos ves esta barra</span><a class="btn" href="https://gutierrezfranco.github.io/apple/menu-enzo/?panel=1" target="_blank" rel="noopener" style="text-decoration:none">📊 Qué marcó Enzo</a>${mode==="enzo"?`<button type="button" data-act="toedit">✏️ Armar semana</button>`:`<button type="button" data-act="toenzo">👀 Ver como Enzo</button>`}</div>`;
 }
 function editView(){
   const D=draft;
@@ -203,7 +228,7 @@ function pickView(){
 let tele=false;
 function render(){
   syncDraft();
-  root.innerHTML=(mode==="edit"&&owner&&draft?editView():enzoView())+(tele&&mode==="enzo"?teleView():"");
+  root.innerHTML=isPanel?panelView():(mode==="edit"&&owner&&draft?editView():enzoView())+(tele&&mode==="enzo"?teleView():"");
 }
 function syncDraft(){
   if(!draft)return;
@@ -221,7 +246,7 @@ root.addEventListener("click",e=>{
   switch(a){
     case "prev":cur--;render();scrollTo(0,0);break;
     case "next":cur++;render();scrollTo(0,0);break;
-    case "up":st[cur]=!st[cur];save();if(st[cur]&&cur<WEEK.items.length-1){render();setTimeout(()=>{cur++;render();scrollTo({top:0,behavior:"smooth"})},700)}else render();break;
+    case "up":st[cur]=!st[cur];save();push(cur);if(st[cur]&&cur<WEEK.items.length-1){render();setTimeout(()=>{cur++;render();scrollTo({top:0,behavior:"smooth"})},700)}else render();break;
     case "tele":tele=true;render();try{navigator.wakeLock&&navigator.wakeLock.request("screen").catch(()=>{})}catch(_){};break;
     case "teleclose":tele=false;render();break;
     case "bigger":fs=Math.min(60,fs+4);render();break;
@@ -231,9 +256,9 @@ root.addEventListener("click",e=>{
     case "pick":syncDraft();pickFor=+el.dataset.i;pickFilter=draft.items[pickFor].t||"all";render();break;
     case "closepick":pickFor=null;render();break;
     case "filt":pickFilter=el.dataset.f;render();break;
-    case "choose":{if(mode==="edit"){const b=bank.find(x=>x.id===el.dataset.id);if(b){draft.items[pickFor]=cleanItem(b)};confirmPub=false}else{const b=BANK.find(x=>x.id===el.dataset.id);if(b){ov[cur]=b.id;saveOv();st[cur]=false;save()}};pickFor=null;render();scrollTo(0,0);break}
+    case "choose":{if(mode==="edit"){const b=bank.find(x=>x.id===el.dataset.id);if(b){draft.items[pickFor]=cleanItem(b)};confirmPub=false}else{const b=BANK.find(x=>x.id===el.dataset.id);if(b){ov[cur]=b.id;saveOv();st[cur]=false;save();push(cur)}};pickFor=null;render();scrollTo(0,0);break}
     case "epick":pickFor=cur;pickFilter=itemFor(cur).t||"all";render();break;
-    case "eback":delete ov[cur];saveOv();render();break;
+    case "eback":delete ov[cur];saveOv();push(cur);render();break;
     case "edtx":syncDraft();const it=draft.items[+el.dataset.i];it._open=!it._open;render();break;
     case "loadsug":{syncDraft();const items=(sugerida.ids||[]).map(id=>bank.find(b=>b.id===id)).filter(Boolean).map(cleanItem);if(items.length){draft.items=items.slice(0,6);while(draft.items.length<6&&WEEK.items[draft.items.length])draft.items.push(WEEK.items[draft.items.length]);if(sugerida.label)draft.label=sugerida.label;statusMsg="Cargué la semana sugerida. Revisala y publicala.";}else statusMsg="La semana sugerida no tiene ideas que estén en el banco.";confirmPub=false;render();break}
     case "publish":publish();break;
@@ -267,6 +292,7 @@ async function publish(){
 
 /* ---------- Arranque ---------- */
 render();
+if(PUB){pull();if(isPanel)setInterval(pull,15000);else document.addEventListener("visibilitychange",()=>{if(!document.hidden)pull()})}
 (async()=>{
   const user=await (window.claude&&claude.use?claude.use("user"):null);
   owner=user?await user.isOwner():false;
